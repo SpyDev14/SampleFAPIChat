@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebSocket Example</title>
+</head>
+
+<body>
+    <div class="main">
+        <h3>Пример чата WebSocket</h3>
+        <div class="input-box">
+            <input type="text" id="textInput" placeholder="Введите текст">
+            <button id="sendBtn">Отправить</button>
+        </div>
+        <div class="messages-container" id="containerForMessages"></div>
+    </div>
+    <script>
+        function specialLabel(str) {return `[${str.toUpperCase()}]`};
+        
+        const alertsMessages = new Map();
+        alertsMessages
+        .set("connection-close", `${specialLabel("info")} Соединение разорванно`)
+        .set("connection-open",  `${specialLabel("info")} Соединение установлено`)
+        .set("connection-error", `${specialLabel("erro")} Ошибка соединения`)
+
+        function getRandomInt(min, max)
+        {
+            return Math.floor(Math.random() * (max - min + 1)) + min;
+        }
+
+        // Генерируем число
+        const id = getRandomInt(1, 2147483647);
+
+        //Создаём веб сокет соединение с сервером
+        const socket = new WebSocket(`ws://127.0.0.1:8000/ws/${id}`);
+        console.log(`WebSocket: "ws://127.0.0.1:8000/ws/${id}"`)
+        
+        // Функция для отображения сообщений на веб странице
+        function addMessage(message)
+        {
+            const msgContainer = document.getElementById("containerForMessages");
+            const msgElement = document.createElement("div");
+            msgElement.textContent = message;
+            msgContainer.appendChild(msgElement);
+        }
+
+        socket.addEventListener("open", (event) =>
+        {
+            addMessage(alertsMessages.get("connection-open"))
+        })
+
+        socket.addEventListener("close", (event) =>
+        {
+            addMessage(alertsMessages.get("connection-close"))
+        })
+        
+        socket.addEventListener("error", (event) =>
+        {
+            addMessage(`${alertsMessages.get("connection-error")}: ${event.data}`)
+        })
+
+        // Событие, вызываемое при получении сообщения от сервера
+        socket.onmessage = (event) =>
+        {
+            addMessage(`<- : ${event.data}`)
+        }
+
+        const textInput = document.getElementById("textInput");
+        const sendBtn   = document.getElementById("sendBtn");
+
+        sendBtn.addEventListener("click", () =>
+        {
+            const input = textInput.value;
+            socket.send(input)
+        });
+    </script>
+    <style>
+        html *
+        {
+            color: #0e0e0e !important;
+            font-family: system-ui !important;
+        }
+
+        .main {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            height: 360px;
+        }
+
+        .input-box
+        {
+            display: flex;
+            gap: 0.5rem;
+            align-items: flex-start;
+        }
+
+        .messages-container
+        {
+            background: #f5f5f5;
+        }
+    </style>
+</body>
+
+</html>
