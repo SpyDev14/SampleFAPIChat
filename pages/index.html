@@ -34,8 +34,8 @@
         const id = getRandomInt(1, 2147483647);
 
         //Создаём веб сокет соединение с сервером
-        const socket = new WebSocket(`ws://127.0.0.1:8000/ws/${id}`);
-        console.log(`WebSocket: "ws://127.0.0.1:8000/ws/${id}"`)
+        const socket = new WebSocket(`ws://127.0.0.1:8000/connections/${id}`);
+        console.log(`WebSocket: "ws://127.0.0.1:8000/connections/${id}"`)
         
         // Функция для отображения сообщений на веб странице
         function addMessage(message)
