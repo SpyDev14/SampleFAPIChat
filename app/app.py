@@ -27,14 +27,14 @@ class ConnectionManager:
 # START
 
 app = FastAPI()
-pagesMan = Jinja2Templates(directory="pages")
+templatesMan = Jinja2Templates(directory="C:/Users/Admin/source/repos/SampleFAPIChat/pages")
 connectionMan = ConnectionManager()
 
 @app.get("/", response_class=HTMLResponse)
 def root(request: Request):
-    return pagesMan.TemplateResponse("index.html", {"request": request})
+    return templatesMan.TemplateResponse("index.html", {"request": request})
 
-@app.websocket("connections/{client_id}")
+@app.websocket("ws/{client_id}")
 async def websocket_endpoint(websocket: WebSocket, client_id: int):
     await connectionMan.connect(websocket)
     try:
@@ -44,4 +44,4 @@ async def websocket_endpoint(websocket: WebSocket, client_id: int):
 
     except WebSocketDisconnect:
         connectionMan.disconnect(websocket)
-        connectionMan.broadcast(f"Пользователь #{client_id} ливнул")
+        connectionMan.broadcast(f"Пользователь #{client_id} вышел")
