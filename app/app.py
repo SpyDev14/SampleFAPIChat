@@ -34,7 +34,7 @@ connectionMan = ConnectionManager()
 def root(request: Request):
     return pagesMan.TemplateResponse("index.html", {"request": request})
 
-@app.websocket("connections/{client_id}")
+@app.websocket("/connections/{client_id}")
 async def websocket_endpoint(websocket: WebSocket, client_id: int):
     await connectionMan.connect(websocket)
     try:
